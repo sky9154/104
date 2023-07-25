@@ -46,7 +46,6 @@ def access_token (id: str, secret: str) -> str:
   else:
     return ''
 
-
 def card_data (startDate: str, endDate: str) -> list:
   '''
   取得打卡資料
@@ -67,18 +66,15 @@ def card_data (startDate: str, endDate: str) -> list:
     'cardTime': int((result['打卡時間'] - timedelta(hours=8) - datetime(1970, 1, 1)).total_seconds() * 1000)
   } for result in cursor]
 
-
-def begin_end_day () -> tuple[str, str]:
+def begin_end_day (time: str) -> tuple[str, str]:
   '''
   取得開始日期及結束日期
   '''
 
-  hour = localtime().tm_hour
   local_time = localtime()
 
   date = strftime('%Y%m%d', local_time)
 
-  if 0 < hour and hour <= 12:
-    return f'{date} 00:00:00.000', f'{date} 10:00:00.000'
-  else:
-    return f'{date} 10:00:00.001', f'{date} 23:59:59.999'
+  time_list = ['00:00:00', '09:00:00', '09:10:00', '09:30:00', '10:00:00', '22:00:00']
+
+  return f'{date} {time_list[time_list.index(time) - 1]}.001', f'{date} {time}.000'
