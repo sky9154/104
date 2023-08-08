@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
-from time import localtime, sleep, strftime
+from time import sleep
+from datetime import datetime
 from os import getenv
-from transfer_card import upload
-import get
+from functions.transfer_card import upload
+import functions.get as get
 
 
 load_dotenv()
@@ -18,20 +19,23 @@ card_data = None
 
 if AUTO in ['TRUE', 'True', 'true', 't']:
   while True:
-    local_time = localtime()
-    time = strftime('%H:%M:%S', local_time)
+    now_date = datetime.now().strftime('%Y%m%d')
+    now_time =  datetime.now().strftime('%H:%M:%S')
 
-    if time in ['09:00:00', '09:10:00', '09:30:00', '10:00:00', '22:00:00']:
+    if now_time in ['09:00:00', '09:10:00', '09:30:00', '10:00:00', '22:00:00']:
       if __name__ == '__main__':
-        begin_day, end_day = get.begin_end_day(time)
+        for dt in get.upload_list(now_date, now_time):
+          date = dt.split(' ')[0]
+          time = dt.split(' ')[1]
 
-        card_data = get.card_data(begin_day, end_day)
+          begin_day, end_day = get.begin_end_day(date, time)
+          print(begin_day, end_day)
 
-        upload(card_data)
+          card_data = get.card_data(now_time, begin_day, end_day)
+          upload(card_data, end_day)
 
     sleep(1)
 elif AUTO in ['FALSE', 'False', 'false', 'f']:
-  card_data = get.card_data(BEGIN_DATE, END_DATE)
-
   if __name__ == '__main__':
+    card_data = get.card_data(BEGIN_DATE, END_DATE)
     upload(card_data)

@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
 from datetime import datetime
-from time import strftime
-from notification import line
 from requests import request
 from json import dumps
 from os import getenv
+from notification import line
 from get import access_token
 
 
@@ -13,7 +12,7 @@ load_dotenv()
 CLIENT_ID = getenv('CLIENT_ID')
 CLIENT_SECRET = getenv('CLIENT_SECRET')
 
-def upload (card_data: list):
+def upload (card_data: list, end_day: str):
   '''
   上傳打卡資料
   '''
@@ -30,7 +29,8 @@ def upload (card_data: list):
 
   response = request('POST', url, headers=headers, data=payload)
 
-  date = strftime('%Y%m%d_%H%M%S')
+  date = datetime.strptime(end_day, '%Y%m%d %H:%M:%S.000')
+  date = datetime.strftime(date, '%Y%m%d_%H%M%S')
 
   notification = ''
 
